@@ -1,0 +1,52 @@
+version: '3'
+
+volumes:
+  pg_data:
+  static:
+
+services:
+  db:
+    image: postgres:13.10
+    env_file: .env
+    environment:
+      DB_NAME: postgres
+      DB_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+  backend:
+    build: ./backend/
+    restart: always
+    env_file: .env
+    environment:
+      DB_NAME: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      DB_HOST: db
+    command: >
+      sh -c "python3 /app/manage.py migrate &&
+             python3 /app/manage.py collectstatic --noinput &&
+             cp -r /app/static/. /var/html/ &&
+             cd /app/ &&
+             gunicorn --bind 0.0.0.0:8000 backend.wsgi:application
+             "
+    volumes:
+      - static:/app/static/
+    depends_on:
+      - db
+  frontend:
+    env_file: .env
+    build: ./frontend/
+    # command: cp -r /app/build/. /frontend_static/
+    volumes:
+      - ./frontend/:/app/result_build/
+    depends_on:
+      - backend
+  gateway:
+    build: ./gateway/
+    volumes:
+      - ./frontend/build:/usr/share/nginx/html/
+      - static:/var/html/static/
+    ports:
+      - "8000:80"
