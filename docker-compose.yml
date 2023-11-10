@@ -16,7 +16,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
-    build: ./backend/
+    image: lopentusska/taski-backend:latest
     restart: always
     env_file: .env
     environment:
@@ -37,14 +37,13 @@ services:
       - db
   frontend:
     env_file: .env
-    build: ./frontend/
-    # command: cp -r /app/build/. /frontend_static/
+    image: lopentusska/taski-backend:latest
     volumes:
       - ./frontend/:/app/result_build/
     depends_on:
       - backend
   gateway:
-    build: ./gateway/
+    image: lopentusska/taski-gateway:latest
     volumes:
       - ./frontend/build:/usr/share/nginx/html/
       - static:/var/html/static/
