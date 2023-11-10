@@ -11,7 +11,7 @@
 
 ### Clone the repository
 ```bash
-git clone 
+git clone git@github.com:lopentusska/taski.git
 ```
 
 ### Create .env file with the following script
