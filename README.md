@@ -43,7 +43,10 @@ docker logs <container_name> -f
 ```bash
 docker compose down
 ```
- 
+
+# Run locally:
+
+## Start backend
 
 ### postgresql
 ```bash
